@@ -1,8 +1,9 @@
 /**
  * gallery.js
  * Renders the 3:4 photo grid from OCEAN_SETTINGS.galleryPhotos (set in
- * config/settings.js). Photos are loaded from assets/images/ automatically.
- * Falls back to a gradient placeholder when a photo file is missing.
+ * config/settings.js). Supports both images (jpeg/png/webp/gif) and
+ * video clips (mp4/webm/ogg). Falls back to a gradient placeholder when
+ * a file is missing.
  */
 (function (window, document) {
   'use strict';
@@ -29,12 +30,36 @@
       <rect x="3" y="4" width="18" height="16" rx="2.4"/>
     </svg>`;
 
+  const PLAY_BADGE_SVG = `
+    <svg class="gallery__play-badge" viewBox="0 0 44 44" fill="none" aria-hidden="true">
+      <circle cx="22" cy="22" r="22" fill="rgba(0,0,0,0.52)"/>
+      <polygon points="17,13 35,22 17,31" fill="white"/>
+    </svg>`;
+
+  /** Returns true if the src is a video file based on extension. */
+  function isVideo(src) {
+    if (!src) return false;
+    return /\.(mp4|webm|ogg)$/i.test(src.split('?')[0]);
+  }
+
   function plateFor(index) {
     return PLATE_GRADIENTS[index % PLATE_GRADIENTS.length];
   }
 
   function mediaMarkup(item, index, forLightbox) {
     if (item.src) {
+      if (isVideo(item.src)) {
+        if (forLightbox) {
+          // Full controls in lightbox
+          return `<video class="gallery__media gallery__video" src="${escapeHtml(item.src)}" controls playsinline preload="metadata"></video>`;
+        } else {
+          // Continuous autoplay muted loop in grid thumbnail
+          return `
+            <video class="gallery__media gallery__video" src="${escapeHtml(item.src)}" autoplay muted loop playsinline preload="auto" tabindex="-1">
+            </video>
+            ${PLAY_BADGE_SVG}`;
+        }
+      }
       return `<img class="gallery__media" src="${escapeHtml(item.src)}" alt="${escapeHtml(item.caption || '')}" loading="${forLightbox ? 'eager' : 'lazy'}">`;
     }
     const indexLabel = String(index + 1).padStart(2, '0');
@@ -48,11 +73,12 @@
   function buildTile(item, index) {
     const el = document.createElement('div');
     el.className = 'gallery__item';
+    if (isVideo(item.src)) el.classList.add('gallery__item--video');
     el.style.setProperty('--d', `${(index % 4) * 0.08}s`);
     el.setAttribute('data-index', String(index));
     el.setAttribute('role', 'button');
     el.setAttribute('tabindex', '0');
-    el.setAttribute('aria-label', `Open photo: ${item.caption}`);
+    el.setAttribute('aria-label', `Open ${isVideo(item.src) ? 'video' : 'photo'}: ${item.caption}`);
     el.innerHTML = `
       ${mediaMarkup(item, index, false)}
       <div class="gallery__overlay">
@@ -80,7 +106,8 @@
     return photos.map((item, i) => ({
       id: `g${i + 1}`,
       caption: item.caption || '',
-      src: item.file ? `${item.file}` : null
+      src: item.file ? `${item.file}` : null,
+      type: isVideo(item.file) ? 'video' : 'image'
     }));
   }
 
@@ -89,6 +116,11 @@
     if (!grid) return;
     grid.innerHTML = '';
     data.forEach((item, i) => grid.appendChild(buildTile(item, i)));
+
+    // Ensure all grid videos start playing
+    grid.querySelectorAll('video').forEach((vid) => {
+      vid.play().catch(() => {});
+    });
   }
 
   function openLightbox(index) {
@@ -105,10 +137,22 @@
     lightbox.classList.add('is-open');
     lightbox.setAttribute('aria-hidden', 'false');
     document.body.classList.add('no-scroll');
+
+    // Autoplay video jika item adalah video
+    const vid = mediaWrap.querySelector('video');
+    if (vid) {
+      vid.play().catch(() => {
+        // Fallback: beberapa browser blokir autoplay tanpa mute
+        vid.muted = true;
+        vid.play();
+      });
+    }
   }
 
   function closeLightbox() {
     const lightbox = document.querySelector('.lightbox');
+    // Pause any playing video in the lightbox before closing
+    lightbox?.querySelector('video')?.pause();
     lightbox?.classList.remove('is-open');
     lightbox?.setAttribute('aria-hidden', 'true');
     document.body.classList.remove('no-scroll');

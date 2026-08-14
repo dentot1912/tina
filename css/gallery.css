@@ -51,6 +51,32 @@
 
 .gallery__item:hover .gallery__media { transform: scale(1.06); }
 
+/* Video thumbnail — same object-fit as image */
+.gallery__video {
+  object-fit: cover;
+  pointer-events: none; /* clicks pass through to gallery__item */
+}
+
+/* Play badge: discreet indicator in top right over video thumbnails */
+.gallery__play-badge {
+  position: absolute;
+  top: var(--sp-3, 12px);
+  right: var(--sp-3, 12px);
+  width: 32px;
+  height: 32px;
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  opacity: 0.85;
+  z-index: 2;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5));
+}
+
+.gallery__item--video:hover .gallery__play-badge {
+  transform: scale(1.1);
+  opacity: 1;
+}
+
+
 /* Placeholder visual shown until real photos are supplied — designed to
    read as an intentional "plate" rather than a broken image. */
 .gallery__placeholder {
@@ -166,6 +192,13 @@
 }
 
 .lightbox__media-wrap img { width: 100%; height: 100%; object-fit: cover; }
+.lightbox__media-wrap video.gallery__video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+  pointer-events: auto;
+}
 .lightbox__media-wrap .gallery__placeholder svg { width: 22%; height: 22%; }
 
 .lightbox__caption {

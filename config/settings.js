@@ -34,22 +34,31 @@ const MUSIC_TRACKS = [
     title:  "Hitam Putih",             // ← GANTI JUDUL LAGU
     artist: "Fourtwnty",                   // ← GANTI NAMA ARTIS
     src:    "assets/music/song1.mp3",    //   (nama file mp3 — jangan diubah kecuali nama filenya beda)
-    cover:  "assets/music/song1.jpeg",   //   (nama file cover — jangan diubah kecuali nama filenya beda)
+    cover:  "assets/music/song1.jpg",   //   (nama file cover — jangan diubah kecuali nama filenya beda)
     startTime: 0,                           // ← MULAI DARI DETIK KE BERAPA
   },
 ];
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   4. FOTO GALERI
+   4. FOTO & VIDEO GALERI
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   Taruh foto di:  assets/images/
-   Nama file harus:  img1.jpeg  img2.jpeg  … img8.jpeg
-   Ganti caption (keterangan foto) di setiap baris.               */
+   Taruh foto di:   assets/image1.jpeg  dst.
+   Taruh video di:  assets/video1.mp4   dst.  (mendukung .mp4, .webm, .ogg)
+
+   Format setiap baris:
+     { file: "path/ke/file", caption: "keterangan" }
+
+   ✦ Gambar → tampil sebagai foto biasa
+   ✦ Video  → thumbnail muted preview saat hover + pemutar penuh di lightbox  */
 const GALLERY_PHOTOS = [
   { file: "assets/image2.jpeg", caption: "-" },
   { file: "assets/image1.jpeg", caption: "-" },  // ← GANTI CAPTION
   { file: "assets/image3.jpeg", caption: "-" },
   { file: "assets/image4.jpeg", caption: "-" },
+  { file: "assets/video.mp4", caption: "-" },
+  { file: "assets/video2.mp4", caption: "-" },
+  // Contoh menambahkan video:
+  // { file: "assets/video1.mp4", caption: "Momen spesial ✨" },
 ];
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

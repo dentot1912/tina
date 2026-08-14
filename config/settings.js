@@ -55,8 +55,10 @@ const GALLERY_PHOTOS = [
   { file: "assets/image1.jpeg", caption: "-" },  // ← GANTI CAPTION
   { file: "assets/image3.jpeg", caption: "-" },
   { file: "assets/image4.jpeg", caption: "-" },
+  { file: "assets/video4.mp4", caption: "-" },
+  { file: "assets/video5.mp4", caption: "-" },
   { file: "assets/video.mp4", caption: "-" },
-  { file: "assets/video2.mp4", caption: "-" },
+  { file: "assets/video3.mp4", caption: "-" },
   // Contoh menambahkan video:
   // { file: "assets/video1.mp4", caption: "Momen spesial ✨" },
 ];

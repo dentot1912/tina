@@ -21,8 +21,11 @@
   let typed = false;
 
   function typeParagraphs(container, paragraphs, onDone) {
+    container.setAttribute('translate', 'no');
+    container.classList.add('notranslate');
+
     if (OCEAN.config.prefersReducedMotion) {
-      container.innerHTML = paragraphs.map((p) => `<p>${p}</p>`).join('');
+      container.innerHTML = paragraphs.map((p) => `<p class="notranslate" translate="no">${p}</p>`).join('');
       onDone?.();
       return;
     }
@@ -31,32 +34,43 @@
     let pIndex = 0;
     let cIndex = 0;
     let currentP  = null;
-    let textNode  = null;
+    let textSpan  = null;
     const caret = document.createElement('span');
-    caret.className = 'letter__caret';
+    caret.className = 'letter__caret notranslate';
+    caret.setAttribute('translate', 'no');
+    caret.setAttribute('aria-hidden', 'true');
 
     function typeChar() {
       if (pIndex >= paragraphs.length) {
-        caret.remove();
+        if (caret.parentNode) {
+          caret.parentNode.removeChild(caret);
+        }
         onDone?.();
         return;
       }
       if (!currentP) {
         currentP = document.createElement('p');
-        textNode = document.createTextNode('');
-        currentP.appendChild(textNode);
+        currentP.className = 'notranslate';
+        currentP.setAttribute('translate', 'no');
+
+        textSpan = document.createElement('span');
+        textSpan.className = 'notranslate';
+        textSpan.setAttribute('translate', 'no');
+
+        currentP.appendChild(textSpan);
         currentP.appendChild(caret);
         container.appendChild(currentP);
       }
 
       const text = paragraphs[pIndex];
       cIndex++;
-      textNode.data = text.slice(0, cIndex);
+      textSpan.textContent = text.slice(0, cIndex);
 
       if (cIndex >= text.length) {
         pIndex++;
         cIndex = 0;
         currentP = null;
+        textSpan = null;
         setTimeout(typeChar, 320);
       } else {
         const lastChar = text[cIndex - 1];
@@ -76,6 +90,11 @@
     const body  = document.querySelector('.letter__body');
 
     if (!stage || !panel || !body) return;
+
+    panel.setAttribute('translate', 'no');
+    panel.classList.add('notranslate');
+    body.setAttribute('translate', 'no');
+    body.classList.add('notranslate');
 
     function openLetter() {
       if (typed) return;
